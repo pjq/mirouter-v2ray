@@ -1,0 +1,129 @@
+{
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "localhost"
+    ]
+  },
+  "inbounds": [
+    {
+      "port": 10808,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "udp": true,
+        "userLevel": 8
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls"
+        ],
+        "enabled": true
+      },
+      "tag": "socks"
+    },
+    {
+      "port": 10809,
+      "protocol": "http",
+      "settings": {
+        "userLevel": 8
+      },
+      "tag": "http"
+    }
+  ],
+  "log": {
+    "loglevel": "warning"
+  },
+  "outbounds": [
+    {
+      "mux": {
+        "enabled": false
+      },
+      "protocol": "vmess",
+      "settings": {
+        "vnext": [
+          {
+            "address": "pjq.me",
+            "port": 443,
+            "users": [
+              {
+                "alterId": 64,
+                "id": "58ceb1c6-b580-4d2c-bf41-21b6a35ae6xx",
+                "level": 8,
+                "security": "aes-128-gcm"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlssettings": {
+          "allowInsecure": true,
+          "serverName": ""
+        },
+        "wssettings": {
+          "connectionReuse": true,
+          "headers": {
+            "Host": ""
+          },
+          "path": "[path]"
+        }
+      },
+      "tag": "proxy"
+    },
+    {
+      "protocol": "freedom",
+      "settings": {},
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "http"
+        }
+      },
+      "tag": "block"
+    }
+  ],
+  "policy": {
+    "levels": {
+      "8": {
+        "connIdle": 300,
+        "downlinkOnly": 1,
+        "handshake": 4,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundUplink": true,
+      "statsInboundDownlink": true
+    }
+  },
+  "routing": {
+    "rules": [
+      {
+         "type": "field",
+         "inboundTag": ["dokodemo", "http", "socks"],
+         "outboundTag": "proxy"
+        }
+    ]
+  },
+  "stats": {},
+  "inboundDetour":[
+    {
+       "protocol":"dokodemo-door",
+       "port":1099,
+       "tag": "dokodemo",
+       "settings":{
+          "address":"",
+          "network":"tcp",
+          "timeout":0,
+          "followRedirect":true
+       } 
+     }
+  ]
+}
